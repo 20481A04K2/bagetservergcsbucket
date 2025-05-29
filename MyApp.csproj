@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MyDotNetWebAppRenamed" Version="1.0.1" />
+    <PackageReference Include="MyDotNetWebApp" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
