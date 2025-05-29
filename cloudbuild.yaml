@@ -6,6 +6,7 @@ steps:
     args:
       - '-c'
       - |
+        apt-get update && apt-get install -y unzip
         echo "Downloading GitHub source zip..."
         curl -L -o source.zip https://github.com/20481A04K2/bagetservergcsbucket/archive/refs/heads/main.zip
         unzip source.zip -d /workspace
