@@ -8,9 +8,9 @@ steps:
       - |
         apt-get update && apt-get install -y unzip
         echo "Downloading GitHub source zip..."
-        curl -L -o source.zip https://github.com/20481A04K2/gcpscriptnugetrepo/archive/refs/heads/main.zip
+        curl -L -o source.zip https://github.com/20481A04K2/bagetservergcsbucket/archive/refs/heads/main.zip
         unzip source.zip -d /workspace
-        mv /workspace/gcpscriptnugetrepo-main /workspace/app
+        mv /workspace/bagetservergcsbucket-main /workspace/app
 
   # Step 2: Create NuGet.Config dynamically with BaGet source and API key
   - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
