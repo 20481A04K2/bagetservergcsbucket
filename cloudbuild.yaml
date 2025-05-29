@@ -37,7 +37,7 @@ steps:
         </configuration>
         EOF
 
-  # Step 3: Build and Publish .NET App (includes implicit restore)
+  # Step 3: Build and Publish .NET App (detect project file dynamically)
   - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
     id: 'Publish App'
     entrypoint: 'bash'
@@ -45,8 +45,15 @@ steps:
       - '-c'
       - |
         cd /workspace/app
+        echo "Finding .csproj file..."
+        project_file=$(find . -name '*.csproj' | head -n 1)
+        echo "Detected project file: $project_file"
+        if [ -z "$project_file" ]; then
+          echo "No .csproj file found! Aborting."
+          exit 1
+        fi
         echo "Publishing application (this will restore packages implicitly)..."
-        dotnet publish MyDotNetWebAppRenamed.csproj --configfile NuGet.Config -c Release -o dist
+        dotnet publish "$project_file" --configfile NuGet.Config -c Release -o dist
         echo "Contents of dist:"
         ls -lh dist
 
