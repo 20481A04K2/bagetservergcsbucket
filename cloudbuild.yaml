@@ -46,7 +46,7 @@ steps:
       - |
         cd /workspace/app
         echo "Publishing application (this will restore packages implicitly)..."
-        dotnet publish MyApp.csproj --configfile NuGet.Config -c Release -o dist
+        dotnet publish MyDotNetWebAppRenamed.csproj --configfile NuGet.Config -c Release -o dist
         echo "Contents of dist:"
         ls -lh dist
 
