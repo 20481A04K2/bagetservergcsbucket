@@ -1,0 +1,69 @@
+steps:
+  # Step 1: Download GitHub repo ZIP and extract it
+  - name: 'gcr.io/cloud-builders/curl'
+    id: 'Download GitHub Source'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt-get update && apt-get install -y unzip
+        echo "Downloading GitHub source zip..."
+        curl -L -o source.zip https://github.com/20481A04K2/gcpscriptnugetrepo/archive/refs/heads/main.zip
+        unzip source.zip -d /workspace
+        mv /workspace/gcpscriptnugetrepo-main /workspace/app
+
+  # Step 2: Create NuGet.Config dynamically with BaGet source and API key
+  - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
+    id: 'Create NuGet Config'
+    entrypoint: 'bash'
+    secretEnv: ['BAGET_API_KEY']
+    args:
+      - '-c'
+      - |
+        echo "Creating NuGet.Config with BaGet source..."
+        cat > /workspace/app/NuGet.Config <<EOF
+        <?xml version="1.0" encoding="utf-8"?>
+        <configuration>
+          <packageSources>
+            <clear />
+            <add key="baget" value="https://baget-service-880653953247.asia-south1.run.app/v3/index.json" />
+          </packageSources>
+          <packageSourceCredentials>
+            <baget>
+              <add key="Username" value="anyuser" />
+              <add key="ClearTextPassword" value="$$BAGET_API_KEY" />
+            </baget>
+          </packageSourceCredentials>
+        </configuration>
+        EOF
+
+  # Step 3: Build and Publish .NET App (includes implicit restore)
+  - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
+    id: 'Publish App'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd /workspace/app
+        echo "Publishing application (this will restore packages implicitly)..."
+        dotnet publish MyApp.csproj --configfile NuGet.Config -c Release -o dist
+        echo "Contents of dist:"
+        ls -lh dist
+
+  # Step 4: Upload dist/ to GCS
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'Upload to GCS'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Uploading dist/ to GCS..."
+        gsutil -m cp -r /workspace/app/dist/* gs://my-dotnet-packages/dist/
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/onyx-antler-459216-j6/secrets/baget-api-key/versions/latest
+      env: BAGET_API_KEY
+
+options:
+  logging: CLOUD_LOGGING_ONLY
