@@ -26,7 +26,7 @@ steps:
         <configuration>
           <packageSources>
             <clear />
-            <add key="baget" value="https://baget-service-880653953247.asia-south1.run.app/v3/index.json" />
+            <add key="baget" value="http://34.80.5.89:8080/v3/index.json" />
           </packageSources>
           <packageSourceCredentials>
             <baget>
