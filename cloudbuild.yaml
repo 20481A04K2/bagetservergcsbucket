@@ -1,12 +1,11 @@
 steps:
-  # Step 1: Download GitHub repo ZIP and extract it
-  - name: 'gcr.io/cloud-builders/curl'
+  # Step 1: Download GitHub repo ZIP and extract it (using dotnet sdk which includes curl + unzip)
+  - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
     id: 'Download GitHub Source'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        apt-get update && apt-get install -y unzip
         echo "Downloading GitHub source zip..."
         curl -L -o source.zip https://github.com/20481A04K2/bagetservergcsbucket/archive/refs/heads/main.zip
         unzip source.zip -d /workspace
@@ -37,7 +36,7 @@ steps:
         </configuration>
         EOF
 
-  # Step 3: Build and Publish .NET App (detect project file dynamically)
+  # Step 3: Build and Publish .NET App
   - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
     id: 'Publish App'
     entrypoint: 'bash'
@@ -45,7 +44,7 @@ steps:
       - '-c'
       - |
         cd /workspace/app
-        echo "Publishing application (this will restore packages implicitly)..."
+        echo "Publishing application..."
         dotnet publish MyApp.csproj --configfile NuGet.Config -c Release -o dist
         echo "Contents of dist:"
         ls -lh dist
