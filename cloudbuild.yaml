@@ -12,6 +12,7 @@ steps:
         unzip source.zip -d /workspace
         mv /workspace/bagetservergcsbucket-main /workspace/app
 
+
   # Step 2: Create NuGet.Config dynamically with BaGet source and API key
   - name: 'mcr.microsoft.com/dotnet/sdk:7.0'
     id: 'Create NuGet Config'
